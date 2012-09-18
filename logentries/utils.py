@@ -97,13 +97,11 @@ class SocketAppender(threading.Thread):
 
 
 class LeHandler(logging.Handler):
-    def __init__(self, key, location):
+    def __init__(self, key, hostname, logname):
 	    logging.Handler.__init__(self)
-	    self.key = key
-	    self.location = location
 	    format = logging.Formatter('%(asctime)s : %(levelname)s, %(message)s', '%a %b %d %H:%M:%S %Z %Y')
 	    self.setFormatter(format)
-	    self._thread = SocketAppender(key, location)
+	    self._thread = SocketAppender(key, hostname, logname)
 	    self._started = False
 
     def emit(self, record):
