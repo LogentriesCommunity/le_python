@@ -24,14 +24,13 @@ Usage
     from logentries import LeHandler
     import logging
 
-    log = logging.getLogger('')
+    log = logging.getLogger('logentries')
 
     test = LeHandler(LOGENTRIES_ACCOUNT_KEY, LOGENTRIES_HOSTNAME, LOGENTRIES_LOGNAME)
 
     log.addHandler(test)
 
-    log.info("Info message")
-    log.warn("Warning message")`
+    log.warn("Warning message")
 
 Configure
 ---------
