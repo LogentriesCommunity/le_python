@@ -28,16 +28,17 @@ def dbg(msg):
     print LE + msg
 
 class SocketAppender(threading.Thread):
-    def __init__(self, key, location):
+    def __init__(self, key, hostname, logname='Default.log'):
 	    threading.Thread.__init__(self)
 	    self.daemon = True
 	    self._conn = None
 	    self._queue = Queue.Queue(QUEUE_SIZE)
 	    self.key = key
-	    self.location = location
+	    self.hostname = hostname
+	    self.logname = logname
 
     def openConnection(self):
-	    log_header = "PUT /%s/hosts/%s/?realtime=1 HTTP/1.1\r\n\r\n" %(self.key, self.location)
+	    log_header = "PUT /%s/hosts/%s/%s/?realtime=1 HTTP/1.1\r\n\r\n" %(self.key, self.hostname, self.logname)
 
 	    self._conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	
 	    self._conn.connect((LE_API, LE_PORT))
