@@ -28,7 +28,7 @@ def dbg(msg):
     print LE + msg
 
 class SocketAppender(threading.Thread):
-    def __init__(self, key, hostname, logname='Default.log'):
+    def __init__(self, key, hostname, logname):
 	    threading.Thread.__init__(self)
 	    self.daemon = True
 	    self._conn = None
@@ -97,11 +97,14 @@ class SocketAppender(threading.Thread):
 
 
 class LeHandler(logging.Handler):
-    def __init__(self, key, hostname, logname):
+    def __init__(self, key, hostname, logname='Default.log'):
 	    logging.Handler.__init__(self)
+		self.key = key
+		self.hostname = hostname
+		self.logname = logname
 	    format = logging.Formatter('%(asctime)s : %(levelname)s, %(message)s', '%a %b %d %H:%M:%S %Z %Y')
 	    self.setFormatter(format)
-	    self._thread = SocketAppender(key, hostname, logname)
+	    self._thread = SocketAppender(self.key, self.hostname, self.logname)
 	    self._started = False
 
     def emit(self, record):
