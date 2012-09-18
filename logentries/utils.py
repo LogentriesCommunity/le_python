@@ -99,9 +99,9 @@ class SocketAppender(threading.Thread):
 class LeHandler(logging.Handler):
     def __init__(self, key, hostname, logname='Default.log'):
 	    logging.Handler.__init__(self)
-		self.key = key
-		self.hostname = hostname
-		self.logname = logname
+	    self.key = key
+	    self.hostname = hostname
+	    self.logname = logname
 	    format = logging.Formatter('%(asctime)s : %(levelname)s, %(message)s', '%a %b %d %H:%M:%S %Z %Y')
 	    self.setFormatter(format)
 	    self._thread = SocketAppender(self.key, self.hostname, self.logname)
