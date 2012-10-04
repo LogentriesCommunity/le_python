@@ -2,7 +2,7 @@
 Logentries Logger
 =================
 
-This is a plugin library to enable logging to Logentries from the Python Logger. Logentries is a real-time log management service on the cloud. More info at https://logentries.com. Package source and instructions can also be found at https://github.com/logentries/le_python
+This is a plugin library to enable logging to Logentries from the Python Logger. Logentries is a real-time log management service on the cloud. More info at https://logentries.com.
 
 Setup
 -----
@@ -26,7 +26,7 @@ Usage
 
     log = logging.getLogger('logentries')
 
-    test = LeHandler(LOGENTRIES_ACCOUNT_KEY, LOGENTRIES_HOSTNAME, LOGENTRIES_LOGNAME)
+    test = LeHandler(LOGENTRIES_TOKEN)
 
     log.addHandler(test)
 
@@ -35,15 +35,9 @@ Usage
 Configure
 ---------
 
-Three parameters `LOGENTRIES_ACCOUNT_KEY`, `LOGENTRIES_LOCATION` and `LOGENTRIES_LOGNAME` need to be filled in to sync with your Logentries account.
+The parameter `LOGENTRIES_TOKEN` needs to be filled in to point to a file in your Logentries account.
 
-`LOGENTRIES_ACCOUNT_KEY` can be obtained by clicking Account in the Logentries UI and clicking Account Key on the right hand side. Simply copy and paste this value as a string.
-
-`LOGENTRIES_HOSTNAME` is the name of the host which you created in the Logentries UI.
-
-To create the host, log into your Logentries account and click New on the top right corner. The name you give it is what you will use in the above parameter. 
-
-`LOGENTRIES_LOGNAME` is the name you wish to use for the logfile inside above host. A logfile of the name you choose will be automatically created in the Logentries UI when the first
-events are received.
+In your Logentries account, create a new host, giving it a name that represents your app. Then create a logfile, selecting `Token TCP` as the source_type. This will print a Token UUID
+beside the logfile. This is the value to use for `LOGENTRIES_TOKEN`.
 
 You are now ready to start logging

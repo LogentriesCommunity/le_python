@@ -11,38 +11,37 @@ import time
 QUEUE_SIZE = 32768;
 # Logentries API server address
 LE_API = "api.logentries.com"
-# Default port number for Logentries API server
-LE_PORT = 80
-# Default SSL port number for Logentries API server
-LE_SSL_PORT = 443
+# Port number for token logging to Logentries API server
+LE_PORT = 10000
 # Minimal delay between attempts to reconnect in seconds
 MIN_DELAY = 0.1
 # Maximal delay between attempts to recconect in seconds
 MAX_DELAY = 10
 # LE appender signature - used for debugging messages
 LE = "LE: "
-# Error message displayed when wrong configuration has been detected
-WRONG_CONFIG = "\n\nIt appears you forgot to customize your config file!\n\n"
+# Error message displayed when an incorrect Token has been detected
+INVALID_TOKEN = "\n\nIt appears the LOGENTRIES_TOKEN parameter you entered is incorrect!\n\n"
 
 def dbg(msg):
     print LE + msg
 
+def check_token(token):
+    import re
+
+    valid = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+	
+    return valid.match(token)
+
 class SocketAppender(threading.Thread):
-    def __init__(self, key, hostname, logname):
+    def __init__(self):
 	    threading.Thread.__init__(self)
 	    self.daemon = True
 	    self._conn = None
 	    self._queue = Queue.Queue(QUEUE_SIZE)
-	    self.key = key
-	    self.hostname = hostname
-	    self.logname = logname
 
     def openConnection(self):
-	    log_header = "PUT /%s/hosts/%s/%s/?realtime=1 HTTP/1.1\r\n\r\n" %(self.key, self.hostname, self.logname)
-
 	    self._conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	
 	    self._conn.connect((LE_API, LE_PORT))
-	    self._conn.send(log_header)
 
     def reopenConnection(self):
 	    self.closeConnection()
@@ -91,31 +90,33 @@ class SocketAppender(threading.Thread):
 						
 				    break
 	    except KeyboardInterrupt, e:
-		    dbg("Asynchronous socket client interrupted")
+		    dbg("Logentries asynchronous socket client interrupted")
 
 	    self.closeConnection()
 
 
 class LeHandler(logging.Handler):
-    def __init__(self, key, hostname, logname='Default.log'):
+    def __init__(self, token):
 	    logging.Handler.__init__(self)
-	    self.key = key
-	    self.hostname = hostname
-	    self.logname = logname
+	    self.token = token
+	    self.good_config = True
+	    if not check_token(token):
+		    dbg(INVALID_TOKEN)
+		    self.good_config = False
 	    format = logging.Formatter('%(asctime)s : %(levelname)s, %(message)s', '%a %b %d %H:%M:%S %Z %Y')
 	    self.setFormatter(format)
-	    self._thread = SocketAppender(self.key, self.hostname, self.logname)
+	    self._thread = SocketAppender()
 	    self._started = False
 
     def emit(self, record):
 
-	    if not self._started:
-		    dbg("Starting Asynchronous Socket Appender") 
+	    if not self._started and self.good_config:
+		    dbg("Starting Logentries Asynchronous Socket Appender") 
 		    self._thread.start()
 		    self._started = True
 
 	    msg = self.format(record).rstrip('\n')
-	    msg += '\n'
+	    msg = self.token + msg + '\n'
 
 	    self._thread._queue.put(msg)
 
