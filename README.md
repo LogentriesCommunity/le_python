@@ -14,7 +14,7 @@ Install
 
 To install this library, use the following command:
 
-`easy_install https://github.com/downloads/logentries/le_python/LogentriesLogger-0.1.tar.gz`
+`easy_install https://github.com/downloads/logentries/le_python/LogentriesLogger-0.2.tar.gz`
 
 Usage
 -----
