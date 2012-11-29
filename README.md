@@ -21,12 +21,12 @@ Usage
 
     #!/usr/bin/env python
 
-    from logentries import LeHandler
+    from logentries import LogentriesHandler
     import logging
 
     log = logging.getLogger('logentries')
 
-    test = LeHandler(LOGENTRIES_TOKEN)
+    test = LogentriesHandler(LOGENTRIES_TOKEN)
 
     log.addHandler(test)
 
