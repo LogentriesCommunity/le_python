@@ -95,7 +95,7 @@ class SocketAppender(threading.Thread):
 	    self.closeConnection()
 
 
-class LeHandler(logging.Handler):
+class LogentriesHandler(logging.Handler):
     def __init__(self, token):
 	    logging.Handler.__init__(self)
 	    self.token = token
