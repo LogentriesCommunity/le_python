@@ -105,6 +105,7 @@ class LogentriesHandler(logging.Handler):
 		    self.good_config = False
 	    format = logging.Formatter('%(asctime)s : %(levelname)s, %(message)s', '%a %b %d %H:%M:%S %Z %Y')
 	    self.setFormatter(format)
+	    self.setLevel(logging.DEBUG)
 	    self._thread = SocketAppender()
 	    self._started = False
 
