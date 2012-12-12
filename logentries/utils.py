@@ -35,7 +35,7 @@ def check_token(token):
 class SocketAppender(threading.Thread):
     def __init__(self):
 	    threading.Thread.__init__(self)
-	    self.daemon = False
+	    self.daemon = True
 	    self._conn = None
 	    self._queue = Queue.Queue(QUEUE_SIZE)
 
