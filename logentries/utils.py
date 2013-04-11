@@ -1,4 +1,4 @@
-VERSION = '0.1'
+VERSION = '1.0'
 
 import logging
 import Queue
@@ -80,10 +80,13 @@ class SocketAppender(threading.Thread):
 			    # Take data from queue
 				data = self._queue.get(block=True)
 
+				# Replace newlines with Unicode line separator for multi-line events
+				multiline = data.replace('\n', u'\u2028')
+				multiline += "\n"
 			    # Send data, reconnect if needed
 				while True:
 				    try:
-					    self._conn.send(data)	
+					    self._conn.send(multiline.encode("utf-8"))	
 				    except socket.error, e:
 					    self.reopenConnection()
 					    continue
@@ -117,7 +120,7 @@ class LogentriesHandler(logging.Handler):
 		    self._started = True
 
 	    msg = self.format(record).rstrip('\n')
-	    msg = self.token + msg + '\n'
+	    msg = self.token + msg
 
 	    self._thread._queue.put(msg)
 

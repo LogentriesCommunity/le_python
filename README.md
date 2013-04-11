@@ -29,7 +29,7 @@ Usage
     test = LogentriesHandler(LOGENTRIES_TOKEN)
 
     log.addHandler(test)
-
+	log.setLevel(logging.INFO)    #WARN by default
     log.warn("Warning message")
 
 Configure
