@@ -8,7 +8,7 @@ import random
 import time
 
 # Size of the internal event queue
-QUEUE_SIZE = 32768;
+QUEUE_SIZE = 32768
 # Logentries API server address
 LE_API = "api.logentries.com"
 # Port number for token logging to Logentries API server
