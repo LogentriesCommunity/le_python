@@ -14,7 +14,7 @@ Install
 
 To install this library, use the following command:
 
-`pip install git+git://github.com/logentries/le_python.git`
+`pip install logentries`
 
 Usage
 -----
