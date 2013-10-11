@@ -21,7 +21,7 @@ Usage
 
     #!/usr/bin/env python
 
-    from logentries import LogentriesHandler
+    from LogentriesLogger import LogentriesHandler
     import logging
 
     log = logging.getLogger('logentries')
