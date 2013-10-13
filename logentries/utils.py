@@ -79,9 +79,9 @@ class SocketAppender(threading.Thread):
 		    while True:
 			    # Take data from queue
 				data = self._queue.get(block=True)
-
+				
 				# Replace newlines with Unicode line separator for multi-line events
-				multiline = data.replace('\n', u'\u2028')
+				multiline = unicode(data, "utf-8").replace('\n', '\u2028')
 				multiline += "\n"
 			    # Send data, reconnect if needed
 				while True:
