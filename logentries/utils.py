@@ -1,4 +1,4 @@
-VERSION = '1.0'
+VERSION = '2.0.1'
 
 import logging
 import Queue
@@ -81,7 +81,10 @@ class SocketAppender(threading.Thread):
 				data = self._queue.get(block=True)
 				
 				# Replace newlines with Unicode line separator for multi-line events
-				multiline = unicode(data, "utf-8").replace('\n', '\u2028')
+				if not isinstance(data, unicode):
+					multiline = unicode(data, "utf-8").replace('\n', '\u2028')
+				else:
+					multiline = data.replace('\n', '\u2028')
 				multiline += "\n"
 			    # Send data, reconnect if needed
 				while True:
