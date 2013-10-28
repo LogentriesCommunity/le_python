@@ -82,7 +82,7 @@ class SocketAppender(threading.Thread):
 				
 				# Replace newlines with Unicode line separator for multi-line events
 				if not isinstance(data, unicode):
-					multiline = unicode(data, "utf-8").replace('\n', '\u2028')
+					multiline = unicode(data, "utf-8").replace('\n', u'\u2028')
 				else:
 					multiline = data.replace('\n', '\u2028')
 				multiline += "\n"
