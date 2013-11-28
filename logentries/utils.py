@@ -31,7 +31,7 @@ LINE_SEP = le_helpers.to_unicode('\u2028')
 
 
 def dbg(msg):
-    print LE + msg
+    print(LE + msg)
 
 
 class SocketAppender(threading.Thread):
