@@ -20,9 +20,9 @@ Usage
 -----
 
     #!/usr/bin/env python
-
-    from logentries import LogentriesHandler
+    
     import logging
+    from logentries import LogentriesHandler
 
     log = logging.getLogger('logentries')
 
