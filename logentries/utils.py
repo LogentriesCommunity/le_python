@@ -25,7 +25,8 @@ MAX_DELAY = 10
 # LE appender signature - used for debugging messages
 LE = "LE: "
 # Error message displayed when an incorrect Token has been detected
-INVALID_TOKEN = "\n\nIt appears the LOGENTRIES_TOKEN parameter you entered is incorrect!\n\n"
+INVALID_TOKEN = ("\n\nIt appears the LOGENTRIES_TOKEN "
+                 "parameter you entered is incorrect!\n\n")
 # Unicode Line separator character   \u2028
 LINE_SEP = le_helpers.to_unicode('\u2028')
 
@@ -81,9 +82,11 @@ class SocketAppender(threading.Thread):
                 # Take data from queue
                 data = self._queue.get(block=True)
 
-                # Replace newlines with Unicode line separator for multi-line events
+                # Replace newlines with Unicode line separator
+                # for multi-line events
                 if not le_helpers.is_unicode(data):
-                    multiline = le_helpers.create_unicode(data).replace('\n', LINE_SEP)
+                    multiline = le_helpers.create_unicode(data).replace(
+                        '\n', LINE_SEP)
                 else:
                     multiline = data.replace('\n', LINE_SEP)
                 multiline += "\n"
@@ -109,7 +112,8 @@ class LogentriesHandler(logging.Handler):
         if not le_helpers.check_token(token):
             dbg(INVALID_TOKEN)
             self.good_config = False
-        format = logging.Formatter('%(asctime)s : %(levelname)s, %(message)s', '%a %b %d %H:%M:%S %Z %Y')
+        format = logging.Formatter('%(asctime)s : %(levelname)s, %(message)s',
+                                   '%a %b %d %H:%M:%S %Z %Y')
         self.setFormatter(format)
         self.setLevel(logging.DEBUG)
         self._thread = SocketAppender()

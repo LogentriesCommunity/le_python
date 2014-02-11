@@ -14,7 +14,8 @@ else:
 
 def check_token(token):
     """ Checks if the given token is a valid UUID."""
-    valid = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+    valid = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-"
+                       r"[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
     return valid.match(token)
 
