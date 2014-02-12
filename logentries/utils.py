@@ -66,7 +66,7 @@ class SocketAppender(threading.Thread):
             try:
                 time.sleep(wait_for)
             except KeyboardInterrupt:
-                raise KeyboardInterrupt
+                raise 
 
     def closeConnection(self):
         if self._conn is not None:
