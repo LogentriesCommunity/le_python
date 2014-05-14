@@ -29,6 +29,8 @@ INVALID_TOKEN = ("\n\nIt appears the LOGENTRIES_TOKEN "
                  "parameter you entered is incorrect!\n\n")
 # Unicode Line separator character   \u2028
 LINE_SEP = le_helpers.to_unicode('\u2028')
+# Library Identifier to be sent to server to identify python lib
+LIBRARY_IDENTIFIER = "###P01###"
 
 
 def dbg(msg):
@@ -117,6 +119,7 @@ class LogentriesHandler(logging.Handler):
         self.setFormatter(format)
         self.setLevel(logging.DEBUG)
         self._thread = SocketAppender()
+        self._thread._queue.put(self.token + LIBRARY_IDENTIFIER + '\n')
 
     @property
     def _started(self):
