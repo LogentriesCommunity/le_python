@@ -2,7 +2,7 @@
 Logentries Logger
 =================
 
-This is a plugin library to enable logging to Logentries from the Python Logger. Logentries is a real-time log management service on the cloud. More info at https://logentries.com.
+This is a plugin library to enable logging to Logentries from the Python Logger. Logentries is a real-time log management service on the cloud. More info at https://logentries.com. Note that this plugin is **asynchronous**.
 
 Setup
 -----
@@ -19,18 +19,21 @@ To install this library, use the following command:
 Usage
 -----
 
-    #!/usr/bin/env python
-    
-    import logging
-    from logentries import LogentriesHandler
-
-    log = logging.getLogger('logentries')
-
-    test = LogentriesHandler(LOGENTRIES_TOKEN)
-
-    log.addHandler(test)
-	log.setLevel(logging.INFO)    #WARN by default
-    log.warn("Warning message")
+	#!/usr/bin/env python
+	
+	from logentries import LogentriesHandler
+	import logging
+	
+	log = logging.getLogger('logentries')
+	log.setLevel(logging.INFO)
+	test = LogentriesHandler(LOGENTRIES_TOKEN)
+	
+	log.addHandler(test)
+	
+	log.warn("Warning message")
+	log.info("Info message")
+	
+	sleep(10)
 
 Configure
 ---------
