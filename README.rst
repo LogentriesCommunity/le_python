@@ -17,7 +17,7 @@ Install
 
 To install this library, use the following command:
 
-``pip install logentries``
+``pip install logentrieslogger``
 
 Usage
 -----
