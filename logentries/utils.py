@@ -44,6 +44,9 @@ class SocketAppender(threading.Thread):
         self._conn = None
         self._queue = le_helpers.create_queue(QUEUE_SIZE)
 
+    def empty(self):
+        return self._queue.empty()
+
     def openConnection(self):
         self._conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._conn.connect((LE_API, LE_PORT))
@@ -111,6 +114,9 @@ class LogentriesHandler(logging.Handler):
         logging.Handler.__init__(self)
         self.token = token
         self.good_config = True
+        # give the socket 10 seconds to flush,
+        # otherwise drop logs
+        self.timeout = 10 
         if not le_helpers.check_token(token):
             dbg(INVALID_TOKEN)
             self.good_config = False
@@ -125,6 +131,14 @@ class LogentriesHandler(logging.Handler):
     @property
     def _started(self):
         return self._thread.is_alive()
+
+    def flush(self):
+        # wait for all queued logs to be send
+        now = time.time()
+        while not self._thread.empty():
+            time.sleep(0.2)
+            if time.time() - now > self.timeout:
+                break
 
     def emit(self, record):
         if not self._started and self.good_config:
