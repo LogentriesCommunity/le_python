@@ -11,6 +11,9 @@ import threading
 import socket
 import random
 import time
+import sys
+
+lock = threading.Lock()
 
 # Size of the internal event queue
 QUEUE_SIZE = 32768
@@ -127,14 +130,20 @@ class LogentriesHandler(logging.Handler):
         return self._thread.is_alive()
 
     def emit(self, record):
-        if not self._started and self.good_config:
-            dbg("Starting Logentries Asynchronous Socket Appender")
-            self._thread.start()
+        # Reset stdout. See: http://docs.python.org/2/library/sys.html#sys.__stdout__
+        sys.stdout = sys.__stdout__
+        lock.acquire()
+        try:
+            if not self._started and self.good_config:
+                dbg("Starting Logentries Asynchronous Socket Appender")
+                self._thread.start()
 
-        msg = self.format(record).rstrip('\n')
-        msg = self.token + msg
+            msg = self.format(record).rstrip('\n')
+            msg = self.token + msg
 
-        self._thread._queue.put(msg)
+            self._thread._queue.put(msg)
+        finally:
+            lock.release()
 
     def close(self):
         logging.Handler.close(self)
