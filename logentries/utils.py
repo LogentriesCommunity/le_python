@@ -13,8 +13,6 @@ import random
 import time
 import sys
 
-lock = threading.Lock()
-
 import certifi
 
 # Size of the internal event queue
@@ -82,6 +80,7 @@ class PlainTextSocketAppender(threading.Thread):
             self._conn.close()
 
     def run(self):
+        dbg("Starting Logentries Asynchronous Socket Appender")
         try:
             # Open connection
             self.reopen_connection()
@@ -163,10 +162,6 @@ class LogentriesHandler(logging.Handler):
         else:
             self._thread = SocketAppender()
 
-    @property
-    def _started(self):
-        return self._thread.is_alive()
-
     def flush(self):
         # wait for all queued logs to be send
         now = time.time()
@@ -178,18 +173,20 @@ class LogentriesHandler(logging.Handler):
     def emit(self, record):
         # Reset stdout. See: http://docs.python.org/2/library/sys.html#sys.__stdout__
         sys.stdout = sys.__stdout__
-        lock.acquire()
-        try:
-            if not self._started and self.good_config:
-                dbg("Starting Logentries Asynchronous Socket Appender")
+        if self.good_config and not self._thread.is_alive():
+            try:
                 self._thread.start()
+            except RuntimeError: # It's already started.
+                if not self._thead.is_alive():
+                    raise
 
-            msg = self.format(record).rstrip('\n')
-            msg = self.token + msg
+        msg = self.format(record).rstrip('\n')
+        msg = self.token + msg
 
-            self._thread._queue.put(msg)
+        self._thread._queue.put(msg)
         finally:
             lock.release()
 
     def close(self):
         logging.Handler.close(self)
+
