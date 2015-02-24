@@ -46,9 +46,11 @@ Configure
 The parameter ``LOGENTRIES_TOKEN`` needs to be filled in to point to a
 file in your Logentries account.
 
-In your Logentries account, create a new host, giving it a name that
-represents your app. Then create a logfile, selecting ``Token TCP`` as
-the source\_type. This will print a Token UUID beside the logfile. This
+In your Logentries account, create a logfile, selecting ``Token TCP`` as
+the source\_type. This will print a Token UUID. This
 is the value to use for ``LOGENTRIES_TOKEN``.
+
+The appender will attempt to send your log data over TLS over port 443,
+otherwise it will send over port 80.
 
 You are now ready to start logging

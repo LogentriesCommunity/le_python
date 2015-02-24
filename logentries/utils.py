@@ -35,8 +35,6 @@ INVALID_TOKEN = ("\n\nIt appears the LOGENTRIES_TOKEN "
                  "parameter you entered is incorrect!\n\n")
 # Unicode Line separator character   \u2028
 LINE_SEP = le_helpers.to_unicode('\u2028')
-# Library Identifier to be sent to server to identify python lib
-LIBRARY_IDENTIFIER = "###P01### - Library Initialised"
 
 
 def dbg(msg):
@@ -53,17 +51,17 @@ class PlainTextSocketAppender(threading.Thread):
     def empty(self):
         return self._queue.empty()
 
-    def openConnection(self):
+    def open_connection(self):
         self._conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._conn.connect((LE_API, LE_PORT))
 
-    def reopenConnection(self):
-        self.closeConnection()
+    def reopen_connection(self):
+        self.close_connection()
 
         root_delay = MIN_DELAY
         while True:
             try:
-                self.openConnection()
+                self.open_connection()
                 return
             except Exception:
                 dbg("Unable to connect to Logentries")
@@ -77,16 +75,16 @@ class PlainTextSocketAppender(threading.Thread):
             try:
                 time.sleep(wait_for)
             except KeyboardInterrupt:
-                raise 
+                raise
 
-    def closeConnection(self):
+    def close_connection(self):
         if self._conn is not None:
             self._conn.close()
 
     def run(self):
         try:
             # Open connection
-            self.reopenConnection()
+            self.reopen_connection()
 
             # Send data in queue
             while True:
@@ -106,22 +104,23 @@ class PlainTextSocketAppender(threading.Thread):
                     try:
                         self._conn.send(multiline.encode('utf-8'))
                     except socket.error:
-                        self.reopenConnection()
+                        self.reopen_connection()
                         continue
                     break
         except KeyboardInterrupt:
             dbg("Logentries asynchronous socket client interrupted")
 
-        self.closeConnection()
+        self.close_connection()
 
 try:
     import ssl
 except ImportError:  # for systems without TLS support.
     SocketAppender = PlainTextSocketAppender
+    dbg("Unable to import ssl module. Will send over port 80.")
 else:
     class TLSSocketAppender(PlainTextSocketAppender):
 
-        def openConnection(self):
+        def open_connection(self):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock = ssl.wrap_socket(
                 sock=sock,
@@ -140,7 +139,6 @@ else:
     SocketAppender = TLSSocketAppender
 
 
-
 class LogentriesHandler(logging.Handler):
     def __init__(self, token, force_tls=False):
         logging.Handler.__init__(self)
@@ -148,7 +146,7 @@ class LogentriesHandler(logging.Handler):
         self.good_config = True
         # give the socket 10 seconds to flush,
         # otherwise drop logs
-        self.timeout = 10 
+        self.timeout = 10
         if not le_helpers.check_token(token):
             dbg(INVALID_TOKEN)
             self.good_config = False
@@ -160,8 +158,6 @@ class LogentriesHandler(logging.Handler):
             self._thread = TLSSocketAppender()
         else:
             self._thread = SocketAppender()
-        # Add idenfiter to queue to be sent first on startup
-        self._thread._queue.put(self.token + LIBRARY_IDENTIFIER + '\n')
 
     @property
     def _started(self):
