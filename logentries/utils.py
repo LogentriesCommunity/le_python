@@ -2,7 +2,7 @@
 """ This file contains some utils for connecting to Logentries
     as well as storing logs in a queue and sending them."""
 
-VERSION = '2.0.3'
+VERSION = '2.0.4'
 
 from logentries import helpers as le_helpers
 
