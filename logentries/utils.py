@@ -15,12 +15,15 @@ import sys
 
 lock = threading.Lock()
 
+import certifi
+
 # Size of the internal event queue
 QUEUE_SIZE = 32768
 # Logentries API server address
 LE_API = "api.logentries.com"
 # Port number for token logging to Logentries API server
 LE_PORT = 10000
+LE_TLS_PORT = 20000
 # Minimal delay between attempts to reconnect in seconds
 MIN_DELAY = 0.1
 # Maximal delay between attempts to recconect in seconds
@@ -40,7 +43,7 @@ def dbg(msg):
     print(LE + msg)
 
 
-class SocketAppender(threading.Thread):
+class PlainTextSocketAppender(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.daemon = True
@@ -108,9 +111,35 @@ class SocketAppender(threading.Thread):
 
         self.closeConnection()
 
+try:
+    import ssl
+except ImportError:  # for systems without TLS support.
+    SocketAppender = PlainTextSocketAppender
+else:
+    class TLSSocketAppender(PlainTextSocketAppender):
+
+        def openConnection(self):
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock = ssl.wrap_socket(
+                sock=sock,
+                keyfile=None,
+                certfile=None,
+                server_side=False,
+                cert_reqs=ssl.CERT_REQUIRED,
+                ssl_version=ssl.PROTOCOL_TLSv1,
+                ca_certs=certifi.where(),
+                do_handshake_on_connect=True,
+                suppress_ragged_eofs=True,
+            )
+            sock.connect((LE_API, LE_TLS_PORT))
+            self._conn = sock
+
+    SocketAppender = TLSSocketAppender
+
+
 
 class LogentriesHandler(logging.Handler):
-    def __init__(self, token):
+    def __init__(self, token, force_tls=False):
         logging.Handler.__init__(self)
         self.token = token
         self.good_config = True
@@ -121,7 +150,10 @@ class LogentriesHandler(logging.Handler):
                                    '%a %b %d %H:%M:%S %Z %Y')
         self.setFormatter(format)
         self.setLevel(logging.DEBUG)
-        self._thread = SocketAppender()
+        if force_tls:
+            self._thread = TLSSocketAppender()
+        else:
+            self._thread = SocketAppender()
         # Add idenfiter to queue to be sent first on startup
         self._thread._queue.put(self.token + LIBRARY_IDENTIFIER + '\n')
 
