@@ -129,7 +129,11 @@ else:
                 certfile=None,
                 server_side=False,
                 cert_reqs=ssl.CERT_REQUIRED,
-                ssl_version=ssl.PROTOCOL_TLSv1,
+                ssl_version=getattr(
+                    ssl,
+                    'PROTOCOL_TLSv1_2',
+                    ssl.PROTOCOL_TLSv1
+                ),
                 ca_certs=certifi.where(),
                 do_handshake_on_connect=True,
                 suppress_ragged_eofs=True,
