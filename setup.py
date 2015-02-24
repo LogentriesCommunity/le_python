@@ -1,13 +1,13 @@
 from distutils.core import setup
 
 setup(
-    name='LogentriesLogger',
-    version='0.2',
+    name='Logentries',
+    version='0.3',
     author='Mark Lacomber',
     author_email='marklacomber@gmail.com',
     packages=['logentries'],
     scripts=[],
-    url='http://pypi.python.org/pypi/LogentriesLogger/',
+    url='http://pypi.python.org/pypi/Logentries/',
     license='LICENSE.txt',
     description='Python Logger plugin to send logs to Logentries',
     long_description=open('README.rst').read(),

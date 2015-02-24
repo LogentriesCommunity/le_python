@@ -2,7 +2,7 @@
 """ This file contains some utils for connecting to Logentries
     as well as storing logs in a queue and sending them."""
 
-VERSION = '2.0.2'
+VERSION = '2.0.3'
 
 from logentries import helpers as le_helpers
 
@@ -20,10 +20,10 @@ import certifi
 # Size of the internal event queue
 QUEUE_SIZE = 32768
 # Logentries API server address
-LE_API = "api.logentries.com"
+LE_API = "data.logentries.com"
 # Port number for token logging to Logentries API server
-LE_PORT = 10000
-LE_TLS_PORT = 20000
+LE_PORT = 80
+LE_TLS_PORT = 443
 # Minimal delay between attempts to reconnect in seconds
 MIN_DELAY = 0.1
 # Maximal delay between attempts to recconect in seconds
