@@ -184,8 +184,6 @@ class LogentriesHandler(logging.Handler):
         msg = self.token + msg
 
         self._thread._queue.put(msg)
-        finally:
-            lock.release()
 
     def close(self):
         logging.Handler.close(self)
