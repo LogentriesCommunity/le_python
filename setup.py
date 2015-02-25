@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='Logentries',
-    version='0.5',
+    version='0.7',
     author='Mark Lacomber',
     author_email='marklacomber@gmail.com',
     packages=['logentries'],
@@ -10,7 +10,7 @@ setup(
     url='http://pypi.python.org/pypi/Logentries/',
     license='LICENSE.txt',
     description='Python Logger plugin to send logs to Logentries',
-    long_description=open('README.rst').read(),
+    long_description=open('README.txt').read(),
     install_requires=[
         "certifi",
     ],
