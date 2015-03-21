@@ -41,9 +41,10 @@ def dbg(msg):
 
 
 class PlainTextSocketAppender(threading.Thread):
-    def __init__(self):
+    def __init__(self, verbose=True):
         threading.Thread.__init__(self)
         self.daemon = True
+        self.verbose = verbose
         self._conn = None
         self._queue = le_helpers.create_queue(QUEUE_SIZE)
 
@@ -63,7 +64,8 @@ class PlainTextSocketAppender(threading.Thread):
                 self.open_connection()
                 return
             except Exception:
-                dbg("Unable to connect to Logentries")
+                if self.verbose:
+                    dbg("Unable to connect to Logentries")
 
             root_delay *= 2
             if(root_delay > MAX_DELAY):
@@ -107,7 +109,8 @@ class PlainTextSocketAppender(threading.Thread):
                         continue
                     break
         except KeyboardInterrupt:
-            dbg("Logentries asynchronous socket client interrupted")
+            if self.verbose:
+                dbg("Logentries asynchronous socket client interrupted")
 
         self.close_connection()
 
@@ -143,24 +146,26 @@ else:
 
 
 class LogentriesHandler(logging.Handler):
-    def __init__(self, token, force_tls=False):
+    def __init__(self, token, force_tls=False, verbose=True):
         logging.Handler.__init__(self)
         self.token = token
         self.good_config = True
+        self.verbose = verbose
         # give the socket 10 seconds to flush,
         # otherwise drop logs
         self.timeout = 10
         if not le_helpers.check_token(token):
-            dbg(INVALID_TOKEN)
+            if self.verbose:
+                dbg(INVALID_TOKEN)
             self.good_config = False
         format = logging.Formatter('%(asctime)s : %(levelname)s, %(message)s',
                                    '%a %b %d %H:%M:%S %Z %Y')
         self.setFormatter(format)
         self.setLevel(logging.DEBUG)
         if force_tls:
-            self._thread = TLSSocketAppender()
+            self._thread = TLSSocketAppender(verbose=verbose)
         else:
-            self._thread = SocketAppender()
+            self._thread = SocketAppender(verbose=verbose)
 
     @property
     def _started(self):
@@ -180,7 +185,8 @@ class LogentriesHandler(logging.Handler):
         lock.acquire()
         try:
             if not self._started and self.good_config:
-                dbg("Starting Logentries Asynchronous Socket Appender")
+                if self.verbose:
+                    dbg("Starting Logentries Asynchronous Socket Appender")
                 self._thread.start()
 
             msg = self.format(record).rstrip('\n')
