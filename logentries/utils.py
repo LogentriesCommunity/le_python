@@ -142,8 +142,13 @@ else:
     SocketAppender = TLSSocketAppender
 
 
+_defaultFormatter = logging.Formatter(
+    '%(asctime)s : %(levelname)s, %(message)s',
+    '%a %b %d %H:%M:%S %Z %Y')
+
+
 class LogentriesHandler(logging.Handler):
-    def __init__(self, token, force_tls=False):
+    def __init__(self, token, force_tls=False, format=_defaultFormatter):
         logging.Handler.__init__(self)
         self.token = token
         self.good_config = True
@@ -153,8 +158,6 @@ class LogentriesHandler(logging.Handler):
         if not le_helpers.check_token(token):
             dbg(INVALID_TOKEN)
             self.good_config = False
-        format = logging.Formatter('%(asctime)s : %(levelname)s, %(message)s',
-                                   '%a %b %d %H:%M:%S %Z %Y')
         self.setFormatter(format)
         self.setLevel(logging.DEBUG)
         if force_tls:
