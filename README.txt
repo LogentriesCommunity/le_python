@@ -2,7 +2,7 @@ Logentries Logger
 =================
 
 This is a plugin library to enable logging to Logentries from the Python
-Logger. Additionally this plugin includes metric features such as Function execution time. 
+Logger. Additionally this plugin allows the user to get an overview of methods being executed, their execution time, as well as CPU and Memory statistics.
 Logentries is a real-time log management service on the cloud.
 More info at https://logentries.com. Note that this plugin is
 **asynchronous**.
@@ -55,7 +55,7 @@ Usage with metric functionality
 
     TEST = Metric(LOGENTRIES_METRIC_TOKEN)
 
-    @TEST.time()
+    @TEST.metric()
     def function_one(t):
         """A dummy function that takes some time."""
         time.sleep(t)
