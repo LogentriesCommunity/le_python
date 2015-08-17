@@ -23,8 +23,7 @@ To install this library, use the following command:
 Usage without metric functionality
 ----------------------------------
 
-::
-
+```
     #!/usr/bin/env python
 
     from logentries import LogentriesHandler
@@ -40,14 +39,12 @@ Usage without metric functionality
     log.info("Info message")
 
     sleep(10)
-
+```
 
 Usage with metric functionality
 -------------------------------
 
-::
-
-
+```
     from logentries import LogentriesHandler, metrics
     import time
     import logging
@@ -62,7 +59,7 @@ Usage with metric functionality
 
     if __name__ == '__main__':
             function_one(1)
-
+```
   
 Metric.Time()
 -------------
