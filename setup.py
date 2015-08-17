@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='Logentries',
-    version='0.7',
+    version='0.8',
     author='Mark Lacomber',
     author_email='marklacomber@gmail.com',
     packages=['logentries'],
