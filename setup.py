@@ -10,7 +10,7 @@ setup(
     url='http://pypi.python.org/pypi/Logentries/',
     license='LICENSE.txt',
     description='Python Logger plugin to send logs to Logentries',
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
     install_requires=[
         "certifi",
     ],
