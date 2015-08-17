@@ -185,8 +185,7 @@ class LogentriesHandler(logging.Handler):
                 if self.verbose:
                     dbg("Starting Logentries Asynchronous Socket Appender")
             except RuntimeError: # It's already started.
-                if not self._thread.is_alive():
-                    raise
+                pass
 
         msg = self.format(record).rstrip('\n')
         msg = self.token + msg
