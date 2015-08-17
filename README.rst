@@ -48,12 +48,12 @@ Usage with metric functionality
 ::
 
 
-    from logentries import LogentriesHandler, Metric
+    from logentries import LogentriesHandler, metrics
     import time
     import logging
 
 
-    TEST = Metric(LOGENTRIES_METRIC_TOKEN)
+    TEST = metrics.Metric(LOGENTRIES_METRIC_TOKEN)
 
     @TEST.metric()
     def function_one(t):
