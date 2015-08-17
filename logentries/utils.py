@@ -146,7 +146,7 @@ else:
 
 
 class LogentriesHandler(logging.Handler):
-    def __init__(self, token, force_tls=False, verbose=True):
+    def __init__(self, token, force_tls=False, verbose=True, format=None):
         logging.Handler.__init__(self)
         self.token = token
         self.good_config = True
@@ -158,8 +158,9 @@ class LogentriesHandler(logging.Handler):
             if self.verbose:
                 dbg(INVALID_TOKEN)
             self.good_config = False
-        format = logging.Formatter('%(asctime)s : %(levelname)s, %(message)s',
-                                   '%a %b %d %H:%M:%S %Z %Y')
+        if format is None:
+            format = logging.Formatter('%(asctime)s : %(levelname)s, %(message)s',
+                                       '%a %b %d %H:%M:%S %Z %Y')
         self.setFormatter(format)
         self.setLevel(logging.DEBUG)
         if force_tls:
