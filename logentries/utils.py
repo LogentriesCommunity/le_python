@@ -1,5 +1,6 @@
 """ This file contains some utils for connecting to Logentries
     as well as storing logs in a queue and sending them."""
+from queue import Full
 
 VERSION = '2.0.7'
 
@@ -189,7 +190,10 @@ class LogentriesHandler(logging.Handler):
         msg = self.format(record).rstrip('\n')
         msg = self.token + msg
 
-        self._thread._queue.put(msg)
+        try:
+            self._thread._queue.put(msg)
+        except Full:
+            pass  # don't block and don't let the caller fail. Drop message.
 
     def close(self):
         logging.Handler.close(self)
