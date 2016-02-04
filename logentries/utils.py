@@ -1,7 +1,5 @@
 """ This file contains some utils for connecting to Logentries
     as well as storing logs in a queue and sending them."""
-from queue import Full
-
 VERSION = '2.0.7'
 
 from logentries import helpers as le_helpers
@@ -12,7 +10,7 @@ import socket
 import random
 import time
 import sys
-
+from queue import Full
 import certifi
 
 # Size of the internal event queue
