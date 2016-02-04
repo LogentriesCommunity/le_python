@@ -28,7 +28,10 @@ if sys.version < '3':
         return isinstance(ch, unicode)
 
     def create_unicode(ch):
-        return unicode(ch, 'utf-8')
+        try:
+            return unicode(ch, 'utf-8')
+        except UnicodeDecodeError e:
+            return str(e)
 
     def create_queue(max_size):
         return Queue.Queue(max_size)
