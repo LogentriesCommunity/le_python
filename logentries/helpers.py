@@ -30,7 +30,7 @@ if sys.version < '3':
     def create_unicode(ch):
         try:
             return unicode(ch, 'utf-8')
-        except UnicodeDecodeError e:
+        except UnicodeDecodeError as e:
             return str(e)
 
     def create_queue(max_size):
