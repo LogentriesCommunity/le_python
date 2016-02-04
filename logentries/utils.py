@@ -10,7 +10,6 @@ import socket
 import random
 import time
 import sys
-from queue import Full
 import certifi
 
 # Size of the internal event queue
@@ -190,7 +189,7 @@ class LogentriesHandler(logging.Handler):
 
         try:
             self._thread._queue.put(msg)
-        except Full:
+        except Exception:
             pass  # don't block and don't let the caller fail. Drop message.
 
     def close(self):
