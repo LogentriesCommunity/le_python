@@ -14,8 +14,6 @@ import random
 import time
 import sys
 
-import Queue
-
 import certifi
 
 # Size of the internal event queue
