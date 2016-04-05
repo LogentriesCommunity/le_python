@@ -177,8 +177,6 @@ class LogentriesHandler(logging.Handler):
                 break
 
     def emit(self, record):
-        # Reset stdout. See: http://docs.python.org/2/library/sys.html#sys.__stdout__
-        sys.stdout = sys.__stdout__
         if self.good_config and not self._thread.is_alive():
             try:
                 self._thread.start()
