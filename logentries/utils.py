@@ -14,6 +14,22 @@ import sys
 
 import certifi
 
+
+# Size of the internal event queue
+QUEUE_SIZE = 32768
+# Logentries API server address
+LE_API_DEFAULT = "data.logentries.com"
+# Port number for token logging to Logentries API server
+LE_PORT_DEFAULT = 80
+LE_TLS_PORT_DEFAULT = 443
+# Minimal delay between attempts to reconnect in seconds
+MIN_DELAY = 0.1
+# Maximal delay between attempts to recconect in seconds
+MAX_DELAY = 10
+# Unicode Line separator character   \u2028
+LINE_SEP = le_helpers.to_unicode('\u2028')
+
+
 # LE appender signature - used for debugging messages
 LE = "LE: "
 # Error message displayed when an incorrect Token has been detected
@@ -26,41 +42,32 @@ def dbg(msg):
 
 
 class PlainTextSocketAppender(threading.Thread):
-    def __init__(self, verbose=True, LE_API='data.logentries.com', LE_PORT=80, LE_TLS_PORT=443):
+    def __init__(self, verbose=True, le_api=LE_API_DEFAULT, le_port=LE_PORT_DEFAULT, le_tls_port=LE_TLS_PORT_DEFAULT):
         threading.Thread.__init__(self)
 
         # Logentries API server address
-        self.LE_API = LE_API
+        self.le_api = le_api
 
         # Port number for token logging to Logentries API server
-        self.LE_PORT = LE_PORT
-        self.LE_TLS_PORT = LE_TLS_PORT
-
-        # Size of the internal event queue
-        self.QUEUE_SIZE = 32768
-        # Minimal delay between attempts to reconnect in seconds
-        self.MIN_DELAY = 0.1
-        # Maximal delay between attempts to recconect in seconds
-        self.MAX_DELAY = 10
-        # Unicode Line separator character   \u2028
-        self.LINE_SEP = le_helpers.to_unicode('\u2028')
+        self.le_port = le_port
+        self.le_tls_port = le_tls_port
 
         self.daemon = True
         self.verbose = verbose
         self._conn = None
-        self._queue = le_helpers.create_queue(self.QUEUE_SIZE)
+        self._queue = le_helpers.create_queue(QUEUE_SIZE)
 
     def empty(self):
         return self._queue.empty()
 
     def open_connection(self):
         self._conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._conn.connect((self.LE_API, self.LE_PORT))
+        self._conn.connect((self.le_api, self.le_port))
 
     def reopen_connection(self):
         self.close_connection()
 
-        root_delay = self.MIN_DELAY
+        root_delay = MIN_DELAY
         while True:
             try:
                 self.open_connection()
@@ -70,8 +77,8 @@ class PlainTextSocketAppender(threading.Thread):
                     dbg("Unable to connect to Logentries")
 
             root_delay *= 2
-            if(root_delay > self.MAX_DELAY):
-                root_delay = self.MAX_DELAY
+            if(root_delay > MAX_DELAY):
+                root_delay = MAX_DELAY
 
             wait_for = root_delay + random.uniform(0, root_delay)
 
@@ -98,9 +105,9 @@ class PlainTextSocketAppender(threading.Thread):
                 # for multi-line events
                 if not le_helpers.is_unicode(data):
                     multiline = le_helpers.create_unicode(data).replace(
-                        '\n', self.LINE_SEP)
+                        '\n', LINE_SEP)
                 else:
-                    multiline = data.replace('\n', self.LINE_SEP)
+                    multiline = data.replace('\n', LINE_SEP)
                 multiline += "\n"
                 # Send data, reconnect if needed
                 while True:
@@ -141,14 +148,14 @@ else:
                 do_handshake_on_connect=True,
                 suppress_ragged_eofs=True,
             )
-            sock.connect((self.LE_API, self.LE_TLS_PORT))
+            sock.connect((self.le_api, self.le_tls_port))
             self._conn = sock
 
     SocketAppender = TLSSocketAppender
 
 
 class LogentriesHandler(logging.Handler):
-    def __init__(self, token, force_tls=False, verbose=True, format=None, LE_API="data.logentries.com", LE_PORT=80, LE_TLS_PORT=443):
+    def __init__(self, token, force_tls=False, verbose=True, format=None, le_api=LE_API_DEFAULT, le_port=LE_PORT_DEFAULT, le_tls_port=LE_TLS_PORT_DEFAULT):
         logging.Handler.__init__(self)
         self.token = token
         self.good_config = True
@@ -166,9 +173,9 @@ class LogentriesHandler(logging.Handler):
         self.setFormatter(format)
         self.setLevel(logging.DEBUG)
         if force_tls:
-            self._thread = TLSSocketAppender(verbose=verbose, LE_API=LE_API, LE_PORT=LE_PORT, LE_TLS_PORT=LE_TLS_PORT)
+            self._thread = TLSSocketAppender(verbose=verbose, le_api=le_api, le_port=le_port, le_tls_port=le_tls_port)
         else:
-            self._thread = SocketAppender(verbose=verbose, LE_API=LE_API, LE_PORT=LE_PORT, LE_TLS_PORT=LE_TLS_PORT)
+            self._thread = SocketAppender(verbose=verbose, le_api=le_api, le_port=le_port, le_tls_port=le_tls_port)
 
     def flush(self):
         # wait for all queued logs to be send
