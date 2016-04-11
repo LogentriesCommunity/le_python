@@ -125,10 +125,13 @@ class PlainTextSocketAppender(threading.Thread):
 
         self.close_connection()
 
+SocketAppender = PlainTextSocketAppender
+
 try:
     import ssl
+    ssl_enabled = True
 except ImportError:  # for systems without TLS support.
-    SocketAppender = PlainTextSocketAppender
+    ssl_enabled = False
     dbg("Unable to import ssl module. Will send over port 80.")
 else:
     class TLSSocketAppender(PlainTextSocketAppender):
@@ -150,14 +153,13 @@ else:
                 do_handshake_on_connect=True,
                 suppress_ragged_eofs=True,
             )
+
             sock.connect((self.le_api, self.le_tls_port))
             self._conn = sock
 
-    SocketAppender = TLSSocketAppender
-
 
 class LogentriesHandler(logging.Handler):
-    def __init__(self, token, force_tls=False, verbose=True, format=None, le_api=LE_API_DEFAULT, le_port=LE_PORT_DEFAULT, le_tls_port=LE_TLS_PORT_DEFAULT):
+    def __init__(self, token, use_tls=True, verbose=True, format=None, le_api=LE_API_DEFAULT, le_port=LE_PORT_DEFAULT, le_tls_port=LE_TLS_PORT_DEFAULT):
         logging.Handler.__init__(self)
         self.token = token
         self.good_config = True
@@ -174,7 +176,7 @@ class LogentriesHandler(logging.Handler):
                                        '%a %b %d %H:%M:%S %Z %Y')
         self.setFormatter(format)
         self.setLevel(logging.DEBUG)
-        if force_tls:
+        if use_tls and ssl_enabled:
             self._thread = TLSSocketAppender(verbose=verbose, le_api=le_api, le_port=le_port, le_tls_port=le_tls_port)
         else:
             self._thread = SocketAppender(verbose=verbose, le_api=le_api, le_port=le_port, le_tls_port=le_tls_port)
