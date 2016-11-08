@@ -189,7 +189,7 @@ class LogentriesHandler(logging.Handler):
             if time.time() - now > self.timeout:
                 break
 
-    def emit(self, record):
+    def emit_raw(self, msg):
         if self.good_config and not self._thread.is_alive():
             try:
                 self._thread.start()
@@ -198,19 +198,21 @@ class LogentriesHandler(logging.Handler):
             except RuntimeError: # It's already started.
                 pass
 
-        msg = self.format(record).rstrip('\n')
         msg = self.token + msg
-
         try:
             self._thread._queue.put_nowait(msg)
-        except:
+        except Exception:
             # Queue is full, try to remove the oldest message and put again
             try:
                 self._thread._queue.get_nowait()
                 self._thread._queue.put_nowait(msg)
-            except:
+            except Exception:
                 # Race condition, no need for any action here
                 pass
+
+    def emit(self, record):
+        msg = self.format(record).rstrip('\n')
+        self.emit_raw(msg)
 
     def close(self):
         logging.Handler.close(self)
