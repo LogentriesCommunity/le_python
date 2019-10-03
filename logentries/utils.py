@@ -20,7 +20,7 @@ import certifi
 # Size of the internal event queue
 QUEUE_SIZE = 32768
 # Logentries API server address
-LE_API_DEFAULT = "data.logentries.com"
+LE_API_DEFAULT = "logentries.commadotai.com"
 # Port number for token logging to Logentries API server
 LE_PORT_DEFAULT = 80
 LE_TLS_PORT_DEFAULT = 443
