@@ -3,9 +3,6 @@ Logentries Logger
 
 *This plug-in is no officially supported or maintained by Logentries.*
 
-*We currently have a volunteer maintainer for this project, but if you have major issues with the plug-in, please contact support@logentries.com.*
-
-
 This is a plugin library to enable logging to Logentries from the Python Logger.
 Additionally this plugin allows the user to get an overview of methods being executed,
 their execution time, as well as CPU and Memory statistics.
