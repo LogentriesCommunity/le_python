@@ -1,1 +1,1 @@
-from .utils import LogentriesHandler
+from .utils import LogentriesHandler, LogentriesWHHandler
