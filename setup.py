@@ -7,7 +7,7 @@ with open('README.rst', 'r') as f:
 
 setup(
     name='Logentries',
-    version='0.8',
+    version='0.9',
     author='Mark Lacomber',
     author_email='marklacomber@gmail.com',
     packages=['logentries'],
